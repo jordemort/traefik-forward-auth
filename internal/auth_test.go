@@ -233,7 +233,7 @@ func TestAuthValidateRedirect(t *testing.T) {
 
 	errStr := "Redirect host does not match request host (must match when not using auth host)"
 
-	err := ValidateRedirect(
+	_, err := ValidateRedirect(
 		newRedirectRequest("http://app.example.com/_oauth?state=123"),
 		"http://app.example.com.bad.com",
 	)
@@ -241,7 +241,7 @@ func TestAuthValidateRedirect(t *testing.T) {
 		assert.Equal(errStr, err.Error(), "Should not allow redirect to subdomain")
 	}
 
-	err = ValidateRedirect(
+	_, err = ValidateRedirect(
 		newRedirectRequest("http://app.example.com/_oauth?state=123"),
 		"http://app.example.combad.com",
 	)
@@ -249,7 +249,7 @@ func TestAuthValidateRedirect(t *testing.T) {
 		assert.Equal(errStr, err.Error(), "Should not allow redirect to overlapping domain")
 	}
 
-	err = ValidateRedirect(
+	_, err = ValidateRedirect(
 		newRedirectRequest("http://app.example.com/_oauth?state=123"),
 		"http://example.com",
 	)
@@ -257,7 +257,7 @@ func TestAuthValidateRedirect(t *testing.T) {
 		assert.Equal(errStr, err.Error(), "Should not allow redirect from subdomain")
 	}
 
-	err = ValidateRedirect(
+	_, err = ValidateRedirect(
 		newRedirectRequest("http://app.example.com/_oauth?state=123"),
 		"http://app.example.com/profile",
 	)
@@ -270,7 +270,7 @@ func TestAuthValidateRedirect(t *testing.T) {
 	config.CookieDomains = []CookieDomain{*NewCookieDomain("example.com")}
 	errStr = "Redirect host does not match any expected hosts (should match cookie domain when using auth host)"
 
-	err = ValidateRedirect(
+	_, err = ValidateRedirect(
 		newRedirectRequest("http://app.example.com/_oauth?state=123"),
 		"http://app.example.com.bad.com",
 	)
@@ -278,7 +278,7 @@ func TestAuthValidateRedirect(t *testing.T) {
 		assert.Equal(errStr, err.Error(), "Should not allow redirect to subdomain")
 	}
 
-	err = ValidateRedirect(
+	_, err = ValidateRedirect(
 		newRedirectRequest("http://app.example.com/_oauth?state=123"),
 		"http://app.example.combad.com",
 	)
@@ -286,19 +286,19 @@ func TestAuthValidateRedirect(t *testing.T) {
 		assert.Equal(errStr, err.Error(), "Should not allow redirect to overlapping domain")
 	}
 
-	err = ValidateRedirect(
+	_, err = ValidateRedirect(
 		newRedirectRequest("http://auth.example.com/_oauth?state=123"),
 		"http://app.example.com/profile",
 	)
 	assert.Nil(err, "Should allow between subdomains when using auth host")
 
-	err = ValidateRedirect(
+	_, err = ValidateRedirect(
 		newRedirectRequest("http://auth.example.com/_oauth?state=123"),
 		"http://auth.example.com/profile",
 	)
 	assert.Nil(err, "Should allow same domain when using auth host")
 
-	err = ValidateRedirect(
+	_, err = ValidateRedirect(
 		newRedirectRequest("http://auth.example.com/_oauth?state=123"),
 		"http://example.com/profile",
 	)
