@@ -3,18 +3,17 @@ package provider
 import (
 	"context"
 	"errors"
-
 	"github.com/coreos/go-oidc"
 	"golang.org/x/oauth2"
 )
 
 // OIDC provider
 type OIDC struct {
-	OAuthProvider
-
 	IssuerURL    string `long:"issuer-url" env:"ISSUER_URL" description:"Issuer URL"`
 	ClientID     string `long:"client-id" env:"CLIENT_ID" description:"Client ID"`
 	ClientSecret string `long:"client-secret" env:"CLIENT_SECRET" description:"Client Secret" json:"-"`
+
+	OAuthProvider
 
 	provider *oidc.Provider
 	verifier *oidc.IDTokenVerifier
@@ -81,28 +80,18 @@ func (o *OIDC) ExchangeCode(redirectURI, code string) (string, error) {
 }
 
 // GetUser uses the given token and returns a complete provider.User object
-func (o *OIDC) GetUser(token string) (User, error) {
-	var user User
-
+func (o *OIDC) GetUser(token, _ string) (string, error) {
 	// Parse & Verify ID Token
 	idToken, err := o.verifier.Verify(o.ctx, token)
 	if err != nil {
-		return user, err
+		return "", err
 	}
 
 	// Extract custom claims
-	var claims struct {
-		ID       string `json:"sub"`
-		Email    string `json:"email"`
-		Verified bool   `json:"email_verified"`
-	}
-	if err := idToken.Claims(&claims); err != nil {
-		return user, err
+	var user User
+	if err := idToken.Claims(&user); err != nil {
+		return "", err
 	}
 
-	user.ID = claims.ID
-	user.Email = claims.Email
-	user.Verified = claims.Verified
-
-	return user, nil
+	return user.Email, nil
 }

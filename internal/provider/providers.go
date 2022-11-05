@@ -2,15 +2,19 @@ package provider
 
 import (
 	"context"
+	"fmt"
+	"io"
 	// "net/url"
 
+	"github.com/Jeffail/gabs/v2"
 	"golang.org/x/oauth2"
 )
 
 // Providers contains all the implemented providers
 type Providers struct {
-	Google Google `group:"Google Provider" namespace:"google" env-namespace:"GOOGLE"`
-	OIDC   OIDC   `group:"OIDC Provider" namespace:"oidc" env-namespace:"OIDC"`
+	Google       Google       `group:"Google Provider" namespace:"google" env-namespace:"GOOGLE"`
+	OIDC         OIDC         `group:"OIDC Provider" namespace:"oidc" env-namespace:"OIDC"`
+	GenericOAuth GenericOAuth `group:"Generic OAuth2 Provider" namespace:"generic-oauth" env-namespace:"GENERIC_OAUTH"`
 }
 
 // Provider is used to authenticate users
@@ -18,7 +22,7 @@ type Provider interface {
 	Name() string
 	GetLoginURL(redirectURI, state string) string
 	ExchangeCode(redirectURI, code string) (string, error)
-	GetUser(token string) (User, error)
+	GetUser(token, UserPath string) (string, error)
 	Setup() error
 }
 
@@ -28,14 +32,26 @@ type token struct {
 
 // User is the authenticated user
 type User struct {
-	ID       string `json:"id"`
-	Email    string `json:"email"`
-	Verified bool   `json:"verified_email"`
-	Hd       string `json:"hd"`
+	Email string `json:"email"`
+}
+
+// GetUser extracts a UserID located at the (dot notation) path (UserPath) in the json io.Reader of the UserURL
+func GetUser(r io.Reader, UserPath string) (string, error) {
+	json, err := gabs.ParseJSONBuffer(r)
+	if err != nil {
+		return "", err
+	}
+
+	if !json.ExistsP(UserPath) {
+		return "", fmt.Errorf("no such user path: '%s' in the UserURL response: %s", UserPath, string(json.Bytes()))
+	}
+	return fmt.Sprintf("%v", json.Path(UserPath).Data()), nil
 }
 
 // OAuthProvider is a provider using the oauth2 library
 type OAuthProvider struct {
+	Resource string `long:"resource" env:"RESOURCE" description:"Optional resource indicator"`
+
 	Config *oauth2.Config
 	ctx    context.Context
 }
@@ -51,6 +67,11 @@ func (p *OAuthProvider) ConfigCopy(redirectURI string) oauth2.Config {
 // OAuthGetLoginURL provides a base "GetLoginURL" for proiders using OAauth2
 func (p *OAuthProvider) OAuthGetLoginURL(redirectURI, state string) string {
 	config := p.ConfigCopy(redirectURI)
+
+	if p.Resource != "" {
+		return config.AuthCodeURL(state, oauth2.SetAuthURLParam("resource", p.Resource))
+	}
+
 	return config.AuthCodeURL(state)
 }
 
