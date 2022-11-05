@@ -1,7 +1,6 @@
 package tfa
 
 import (
-	"fmt"
 	"net/http"
 	"net/url"
 	"strings"
@@ -21,6 +20,12 @@ func NewServer() *Server {
 	s := &Server{}
 	s.buildRoutes()
 	return s
+}
+
+func escapeNewlines(data string) string {
+	escapedData := strings.Replace(data, "\n", "", -1)
+	escapedData = strings.Replace(escapedData, "\r", "", -1)
+	return escapedData
 }
 
 func (s *Server) buildRoutes() {
@@ -94,7 +99,7 @@ func (s *Server) AuthHandler(providerName, rule string) http.HandlerFunc {
 			if err != nil {
 				logger.WithField("error", err).Warn("Invalid forwarded for")
 			} else if ok {
-				logger.WithField("addr", ipAddr).Info("Authenticated remote address")
+				logger.WithField("addr", escapeNewlines(ipAddr)).Info("Authenticated remote address")
 				w.WriteHeader(200)
 				return
 			}
@@ -123,8 +128,8 @@ func (s *Server) AuthHandler(providerName, rule string) http.HandlerFunc {
 		// Validate user
 		valid := ValidateUser(user, rule)
 		if !valid {
-			logger.WithField("user", user).Warn("Invalid user")
-			http.Error(w, fmt.Sprintf("User '%s' is not authorized", user), 401)
+			logger.WithField("user", escapeNewlines(user)).Warn("Invalid user")
+			http.Error(w, "User is not authorized", 401)
 			return
 		}
 
@@ -142,7 +147,7 @@ func (s *Server) AuthCallbackHandler() http.HandlerFunc {
 		logger := s.logger(r, "AuthCallback", "default", "Handling callback")
 
 		// Check state
-		state := r.URL.Query().Get("state")
+		state := escapeNewlines(r.URL.Query().Get("state"))
 		if err := ValidateState(state); err != nil {
 			logger.WithFields(logrus.Fields{
 				"error": err,
@@ -271,11 +276,11 @@ func (s *Server) logger(r *http.Request, handler, rule, msg string) *logrus.Entr
 	logger := log.WithFields(logrus.Fields{
 		"handler":   handler,
 		"rule":      rule,
-		"method":    r.Header.Get("X-Forwarded-Method"),
-		"proto":     r.Header.Get("X-Forwarded-Proto"),
-		"host":      r.Header.Get("X-Forwarded-Host"),
-		"uri":       r.Header.Get("X-Forwarded-Uri"),
-		"source_ip": r.Header.Get("X-Forwarded-For"),
+		"method":    escapeNewlines(r.Header.Get("X-Forwarded-Method")),
+		"proto":     escapeNewlines(r.Header.Get("X-Forwarded-Proto")),
+		"host":      escapeNewlines(r.Header.Get("X-Forwarded-Host")),
+		"uri":       escapeNewlines(r.Header.Get("X-Forwarded-Uri")),
+		"source_ip": escapeNewlines(r.Header.Get("X-Forwarded-For")),
 	})
 
 	// Log request
