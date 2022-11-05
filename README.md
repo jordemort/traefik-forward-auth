@@ -47,6 +47,8 @@ You can also use the latest incremental releases found on [docker hub](https://h
 
 ARM releases are also available on docker hub, just append `-arm` or `-arm64` to your desired released (e.g. `2-arm` or `2.1-arm64`).
 
+We also build binary files for usage without docker starting with releases after 2.2.0 You can find these as assets of the specific GitHub release.
+
 #### Upgrade Guide
 
 v2 was released in June 2019, whilst this is fully backwards compatible, a number of configuration options were modified, please see the [upgrade guide](https://github.com/thomseddon/traefik-forward-auth/wiki/v2-Upgrade-Guide) to prevent warnings on startup and ensure you are using the current configuration.
@@ -162,6 +164,7 @@ Application Options:
   --url-path=                                           Callback URL Path (default: /_oauth) [$URL_PATH]
   --secret=                                             Secret used for signing (required) [$SECRET]
   --whitelist=                                          Only allow given user ID, comma separated, can be set multiple times [$WHITELIST]
+  --port=                                               Port to listen on (default: 4181) [$PORT]
   --rule.<name>.<param>=                                Rule definitions, param can be: "action", "rule" or "provider"
 
 Google Provider:
@@ -423,8 +426,6 @@ spec:
       - name: traefik-forward-auth
 ```
 
-Note: If using auth host mode, you must apply the middleware to your auth host ingress.
-
 See the examples directory for more examples.
 
 #### Selective Container Authentication in Swarm
@@ -438,8 +439,6 @@ whoami:
     - "traefik.http.routers.whoami.rule=Host(`whoami.example.com`)"
     - "traefik.http.routers.whoami.middlewares=traefik-forward-auth"
 ```
-
-Note: If using auth host mode, you must apply the middleware to the traefik-forward-auth container.
 
 See the examples directory for more examples.
 
