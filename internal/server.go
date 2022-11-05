@@ -91,7 +91,7 @@ func (s *Server) AuthHandler(providerName, rule string) http.HandlerFunc {
 		// Logging setup
 		logger := s.logger(r, "Auth", rule, "Authenticating request")
 
-		ipAddr := r.Header.Get("X-Forwarded-For")
+		ipAddr := escapeNewlines(r.Header.Get("X-Forwarded-For"))
 		if ipAddr == "" {
 			logger.Warn("missing x-forwarded-for header")
 		} else {
@@ -99,7 +99,7 @@ func (s *Server) AuthHandler(providerName, rule string) http.HandlerFunc {
 			if err != nil {
 				logger.WithField("error", err).Warn("Invalid forwarded for")
 			} else if ok {
-				logger.WithField("addr", escapeNewlines(ipAddr)).Info("Authenticated remote address")
+				logger.WithField("addr", ipAddr).Info("Authenticated remote address")
 				w.WriteHeader(200)
 				return
 			}
