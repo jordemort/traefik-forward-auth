@@ -222,19 +222,19 @@ func TestServerAuthCallback(t *testing.T) {
 
 	// Should catch invalid csrf cookie
 	nonce := "12345678901234567890123456789012"
-	req = newHTTPRequest("GET", "http://example.com/_oauth?state="+nonce+":http://redirect")
+	req = newHTTPRequest("GET", "http://example.com/_oauth?state="+nonce+":http://example.com")
 	c := MakeCSRFCookie(req, "nononononononononononononononono")
 	res, _ = doHttpRequest(req, c)
 	assert.Equal(401, res.StatusCode, "auth callback with invalid cookie shouldn't be authorised")
 
 	// Should catch invalid provider cookie
-	req = newHTTPRequest("GET", "http://example.com/_oauth?state="+nonce+":invalid:http://redirect")
+	req = newHTTPRequest("GET", "http://example.com/_oauth?state="+nonce+":invalid:http://example.com")
 	c = MakeCSRFCookie(req, nonce)
 	res, _ = doHttpRequest(req, c)
 	assert.Equal(401, res.StatusCode, "auth callback with invalid provider shouldn't be authorised")
 
 	// Should redirect valid request
-	req = newHTTPRequest("GET", "http://example.com/_oauth?state="+nonce+":google:http://redirect")
+	req = newHTTPRequest("GET", "http://example.com/_oauth?state="+nonce+":google:http://example.com")
 	c = MakeCSRFCookie(req, nonce)
 	res, _ = doHttpRequest(req, c)
 	require.Equal(307, res.StatusCode, "valid auth callback should be allowed")
@@ -264,7 +264,7 @@ func TestServerAuthCallbackExchangeFailure(t *testing.T) {
 	}
 
 	// Should handle failed code exchange
-	req := newDefaultHttpRequest("/_oauth?state=12345678901234567890123456789012:google:http://redirect")
+	req := newDefaultHttpRequest("/_oauth?state=12345678901234567890123456789012:google:http://example.com")
 	c := MakeCSRFCookie(req, "12345678901234567890123456789012")
 	res, _ := doHttpRequest(req, c)
 	assert.Equal(503, res.StatusCode, "auth callback should handle failed code exchange")
@@ -291,7 +291,7 @@ func TestServerAuthCallbackUserFailure(t *testing.T) {
 	}
 
 	// Should handle failed user request
-	req := newDefaultHttpRequest("/_oauth?state=12345678901234567890123456789012:google:http://redirect")
+	req := newDefaultHttpRequest("/_oauth?state=12345678901234567890123456789012:google:http://example.com")
 	c := MakeCSRFCookie(req, "12345678901234567890123456789012")
 	res, _ := doHttpRequest(req, c)
 	assert.Equal(503, res.StatusCode, "auth callback should handle failed user request")
@@ -317,7 +317,7 @@ func TestServerLogout(t *testing.T) {
 	require.Less(cookie.Expires.Local().Unix(), time.Now().Local().Unix()-50, "cookie should have expired")
 
 	// Test with redirect
-	config.LogoutRedirect = "http://redirect/path"
+	config.LogoutRedirect = "http://example.com/path"
 	req = newDefaultHttpRequest("/_oauth/logout")
 	res, _ = doHttpRequest(req, nil)
 	require.Equal(307, res.StatusCode, "should return a 307")
@@ -335,7 +335,7 @@ func TestServerLogout(t *testing.T) {
 	fwd, _ := res.Location()
 	require.NotNil(fwd)
 	assert.Equal("http", fwd.Scheme, "valid request should be redirected to return url")
-	assert.Equal("redirect", fwd.Host, "valid request should be redirected to return url")
+	assert.Equal("example.com", fwd.Host, "valid request should be redirected to return url")
 	assert.Equal("/path", fwd.Path, "valid request should be redirected to return url")
 
 }
