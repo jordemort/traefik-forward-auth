@@ -191,7 +191,7 @@ func (s *Server) AuthCallbackHandler() http.HandlerFunc {
 		http.SetCookie(w, ClearCSRFCookie(r, c))
 
 		// Validate redirect
-		err = ValidateRedirect(r, redirect)
+		redirectURL, err := ValidateRedirect(r, redirect)
 		if err != nil {
 			logger.WithFields(logrus.Fields{
 				"receieved_redirect": redirect,
@@ -225,7 +225,7 @@ func (s *Server) AuthCallbackHandler() http.HandlerFunc {
 		}).Info("Successfully generated auth cookie, redirecting user.")
 
 		// Redirect
-		http.Redirect(w, r, redirect, http.StatusTemporaryRedirect)
+		http.Redirect(w, r, redirectURL.String(), http.StatusTemporaryRedirect)
 	}
 }
 

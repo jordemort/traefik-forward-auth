@@ -125,11 +125,11 @@ func ValidateDomains(user string, domains CommaSeparatedList) bool {
 
 // ValidateRedirect validates that the given redirect is valid and permitted for
 // the given request
-func ValidateRedirect(r *http.Request, redirect string) error {
+func ValidateRedirect(r *http.Request, redirect string) (*url.URL, error) {
 	redirectURL, err := url.Parse(redirect)
 
 	if err != nil {
-		return errors.New("Unable to parse redirect")
+		return nil, errors.New("Unable to parse redirect")
 	}
 
 	// If we're using an auth domain?
@@ -137,16 +137,16 @@ func ValidateRedirect(r *http.Request, redirect string) error {
 		// If we are using an auth domain, they redirect must share a common
 		// suffix with the requested redirect
 		if !strings.HasSuffix(redirectURL.Host, base) {
-			return errors.New("Redirect host does not match any expected hosts (should match cookie domain when using auth host)")
+			return nil, errors.New("Redirect host does not match any expected hosts (should match cookie domain when using auth host)")
 		}
 	} else {
 		// If not, we should only ever redirect to the same domain
 		if redirectURL.Host != r.Header.Get("X-Forwarded-Host") {
-			return errors.New("Redirect host does not match request host (must match when not using auth host)")
+			return nil, errors.New("Redirect host does not match request host (must match when not using auth host)")
 		}
 	}
 
-	return nil
+	return redirectURL, nil
 }
 
 // Utility methods
