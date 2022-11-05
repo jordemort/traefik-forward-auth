@@ -132,6 +132,10 @@ func ValidateRedirect(r *http.Request, redirect string) (*url.URL, error) {
 		return nil, errors.New("Unable to parse redirect")
 	}
 
+	if redirectURL.Scheme != "http" && redirectURL.Scheme != "https" {
+		return nil, errors.New("Invalid redirect URL scheme")
+	}
+
 	// If we're using an auth domain?
 	if use, base := useAuthDomain(r); use {
 		// If we are using an auth domain, they redirect must share a common
