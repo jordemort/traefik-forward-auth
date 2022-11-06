@@ -4,6 +4,7 @@ FROM golang:1.19 as build
 WORKDIR /usr/src/traefik-forward-auth
 COPY . .
 
+RUN go test ./...
 RUN CGO_ENABLED=0 go build -o ./traefik-forward-auth ./cmd
 
 # Now copy it into our base image.
