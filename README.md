@@ -57,17 +57,13 @@ I haven't tried using the other providers, but all the tests still pass.
 
 ## Releases
 
-We recommend using the `2` tag on docker hub (`thomseddon/traefik-forward-auth:2`).
+Releases of this fork are published to the [GitHub Container Registry](https://github.com/jordemort/traefik-forward-auth/pkgs/container/traefik-forward-auth).
 
-You can also use the latest incremental releases found on [docker hub](https://hub.docker.com/r/thomseddon/traefik-forward-auth/tags) and [github](https://github.com/thomseddon/traefik-forward-auth/releases).
-
-ARM releases are also available on docker hub, just append `-arm` or `-arm64` to your desired released (e.g. `2-arm` or `2.1-arm64`).
-
-We also build binary files for usage without docker starting with releases after 2.2.0 You can find these as assets of the specific GitHub release.
+I currently only publish a `latest` tag.
 
 #### Upgrade Guide
 
-v2 was released in June 2019, whilst this is fully backwards compatible, a number of configuration options were modified, please see the [upgrade guide](https://github.com/thomseddon/traefik-forward-auth/wiki/v2-Upgrade-Guide) to prevent warnings on startup and ensure you are using the current configuration.
+This fork should be backwards-compatible with upstream releases.
 
 ## Usage
 
@@ -78,11 +74,9 @@ See below for instructions on how to setup your [Provider Setup](#provider-setup
 docker-compose.yml:
 
 ```yaml
-version: '3'
-
 services:
   traefik:
-    image: traefik:v2.2
+    image: traefik:v2.9
     command: --providers.docker
     ports:
       - "8085:80"
