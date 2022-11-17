@@ -8,7 +8,7 @@ require (
 	github.com/sirupsen/logrus v1.9.0
 	github.com/stretchr/testify v1.8.1
 	github.com/thomseddon/go-flags v1.4.1-0.20190507184247-a3629c504486
-	github.com/traefik/traefik/v2 v2.9.4
+	github.com/traefik/traefik/v2 v2.9.5
 	golang.org/x/oauth2 v0.1.0
 	gopkg.in/square/go-jose.v2 v2.6.0
 )

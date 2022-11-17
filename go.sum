@@ -98,8 +98,8 @@ github.com/thomseddon/go-flags v1.4.1-0.20190507184247-a3629c504486 h1:hk17f4niA
 github.com/thomseddon/go-flags v1.4.1-0.20190507184247-a3629c504486/go.mod h1:NK9eZpNBmSKVxvyB/MExg6jW0Bo9hQyAuCP+b8MJFow=
 github.com/traefik/paerser v0.1.9 h1:x5hZafOt/yogLvr6upoSOYIAn2nh2GsnLb236MOzd4I=
 github.com/traefik/paerser v0.1.9/go.mod h1:Dk3Bfz6Zyj13/S8pJyRdx/FNvXlsVRVbtp0UK4ZSiA0=
-github.com/traefik/traefik/v2 v2.9.4 h1:S3/m1B7jghU6rDbcecEiI7FCtECNv0uNdeGYC8tPma0=
-github.com/traefik/traefik/v2 v2.9.4/go.mod h1:YVtkADxdqm0pmjU49OWBtD1FIOBDwAmXh4sKzPTGkdI=
+github.com/traefik/traefik/v2 v2.9.5 h1:95lkMHhCiXT8eVuy4U/AhOmNSnVanbNPqBFCARg33+0=
+github.com/traefik/traefik/v2 v2.9.5/go.mod h1:kMSRD+vsKwLbG9SWBz8feHQXcZDCmL7viyITMneduWY=
 github.com/vulcand/predicate v1.2.0 h1:uFsW1gcnnR7R+QTID+FVcs0sSYlIGntoGOTb3rQJt50=
 github.com/vulcand/predicate v1.2.0/go.mod h1:VipoNYXny6c8N381zGUWkjuuNHiRbeAZhE7Qm9c+2GA=
 github.com/yuin/goldmark v1.3.5/go.mod h1:mwnBkeHKe2W/ZEtQ+71ViKU8L12m81fl3OWwC1Zlc8k=
