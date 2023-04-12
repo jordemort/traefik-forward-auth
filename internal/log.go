@@ -2,6 +2,7 @@ package tfa
 
 import (
 	"os"
+	"runtime"
 
 	"github.com/sirupsen/logrus"
 )
@@ -12,39 +13,43 @@ var log *logrus.Logger
 func NewDefaultLogger() *logrus.Logger {
 	// Setup logger
 	log = logrus.StandardLogger()
-	logrus.SetOutput(os.Stdout)
+
+	log.SetOutput(os.Stdout)
+	log.SetReportCaller(true)
 
 	// Set logger format
 	switch config.LogFormat {
 	case "pretty":
 		break
 	case "json":
-		logrus.SetFormatter(&logrus.JSONFormatter{})
+		log.SetFormatter(&logrus.JSONFormatter{})
 	// "text" is the default
 	default:
-		logrus.SetFormatter(&logrus.TextFormatter{
-			DisableColors: true,
-			FullTimestamp: true,
+		log.SetFormatter(&logrus.TextFormatter{
+			ForceColors:      true,
+			FullTimestamp:    true,
+			TimestampFormat:  "2006-01-02 15:04:05",
+			CallerPrettyfier: func(f *runtime.Frame) (string, string) { return "", "" },
 		})
 	}
 
 	// Set logger level
 	switch config.LogLevel {
 	case "trace":
-		logrus.SetLevel(logrus.TraceLevel)
+		log.SetLevel(logrus.TraceLevel)
 	case "debug":
-		logrus.SetLevel(logrus.DebugLevel)
+		log.SetLevel(logrus.DebugLevel)
 	case "info":
-		logrus.SetLevel(logrus.InfoLevel)
+		log.SetLevel(logrus.InfoLevel)
 	case "error":
-		logrus.SetLevel(logrus.ErrorLevel)
+		log.SetLevel(logrus.ErrorLevel)
 	case "fatal":
-		logrus.SetLevel(logrus.FatalLevel)
+		log.SetLevel(logrus.FatalLevel)
 	case "panic":
-		logrus.SetLevel(logrus.PanicLevel)
+		log.SetLevel(logrus.PanicLevel)
 	// warn is the default
 	default:
-		logrus.SetLevel(logrus.WarnLevel)
+		log.SetLevel(logrus.WarnLevel)
 	}
 
 	return log
