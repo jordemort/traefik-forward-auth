@@ -162,7 +162,10 @@ func redirectBase(r *http.Request) string {
 
 // Return url
 func returnUrl(r *http.Request) string {
-	return fmt.Sprintf("%s%s", redirectBase(r), r.URL.Path)
+	// https://github.com/thomseddon/traefik-forward-auth/pull/335
+	// returnUrl is the URL that we will return to after authentication. Uses `RequestURI()` in order
+	// to preserve both the path and query parameters.
+	return fmt.Sprintf("%s%s", redirectBase(r), r.URL.RequestURI())
 }
 
 // Get oauth redirect uri
