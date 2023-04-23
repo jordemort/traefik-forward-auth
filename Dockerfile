@@ -1,5 +1,5 @@
 # Start by building the application.
-FROM golang:1.19 as build
+FROM golang:1.19-alpine as build
 
 WORKDIR /usr/src/traefik-forward-auth
 COPY . .
@@ -8,7 +8,7 @@ RUN go test ./...
 RUN CGO_ENABLED=0 go build -o ./traefik-forward-auth ./cmd
 
 # Now copy it into our base image.
-FROM debian:stable-slim
+FROM alpine
 COPY --from=build /usr/src/traefik-forward-auth/traefik-forward-auth /usr/bin/traefik-forward-auth
 
 ENTRYPOINT [ "/usr/bin/traefik-forward-auth" ]
