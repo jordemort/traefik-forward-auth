@@ -1,0 +1,10 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:base",
+    "github>Zekihan/renovate-config"
+  ],
+  "postUpdateOptions": [
+    "gomodTidy"
+  ]
+}
